@@ -221,3 +221,32 @@ obj_graph = pinject.new_object_graph(binding_specs=[SomeBindingSpec()])
 some_class_1 = obj_graph.provide(SomeClass)
 some_class_2 = obj_graph.provide(SomeClass)
 print(some_class_1.foo is some_class_2.foo)  # False
+
+
+class SomeClass(object):
+    def __init__(self, foo):
+        self.foo = foo
+
+
+class OtherClass(object):
+    def __init__(self, foo):
+        self.foo = foo
+
+
+class FooFoo(object):
+    def __init__(self):
+        self.bar = 'bar'
+
+
+class SomeBindingSpec(pinject.BindingSpec):
+    def configure(self, bind):
+        bind('foo', to_class=FooFoo, in_scope=pinject.SINGLETON)
+
+
+obj_graph = pinject.new_object_graph(binding_specs=[SomeBindingSpec()])
+some_class_1 = obj_graph.provide(SomeClass)
+some_class_2 = obj_graph.provide(SomeClass)
+other_class_1 = obj_graph.provide(OtherClass)
+print(some_class_1.foo is some_class_2.foo)  # True
+print(some_class_1.foo is other_class_1.foo)  # True
+print(some_class_1.foo.bar)  # bar
